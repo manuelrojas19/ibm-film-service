@@ -1,0 +1,29 @@
+server:
+  port: 8201
+spring:
+  application:
+    name: film-service
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ibm_cms_film_service_db
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: postgresql
+    generate-ddl: true
+    open-in-view: false
+keycloak:
+  realm: dev
+  auth-server-url: http://localhost:8180
+  ssl-required: external
+  resource: film-service
+  credentials:
+    secret: c4Pu86FBf3YpS5V2z3SNVVZtmyvqqSUU
+  use-resource-role-mappings: true
+  autodetect-bearer-only: true
+  principal-attribute: preferred_username
+
