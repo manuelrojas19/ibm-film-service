@@ -2,12 +2,15 @@ package com.ibm.academy.cms.filmservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public abstract class PersonDto extends BaseEntityDto {
 
     @NotBlank
@@ -18,7 +21,7 @@ public abstract class PersonDto extends BaseEntityDto {
 
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
-    private Date bornDate;
+    private LocalDate bornDate;
 
     @NotBlank
     private String bornPlace;

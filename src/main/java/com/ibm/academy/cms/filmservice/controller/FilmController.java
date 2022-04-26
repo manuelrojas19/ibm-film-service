@@ -8,7 +8,13 @@ import com.ibm.academy.cms.filmservice.dto.FilmDto;
 import com.ibm.academy.cms.filmservice.entity.Film;
 import com.ibm.academy.cms.filmservice.mapper.FilmMapper;
 import com.ibm.academy.cms.filmservice.service.FilmService;
+import com.querydsl.core.types.Predicate;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +22,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
-
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/films")
 @AllArgsConstructor
@@ -27,17 +31,14 @@ public class FilmController {
     private final FilmService filmService;
     private final FilmAssembler filmAssembler;
     private final FilmMapper filmMapper;
+    private final PagedResourcesAssembler<Film> pagedResourcesAssembler;
 
     @PreAuthorize("permitAll()")
     @GetMapping
-    public ResponseEntity<CollectionModel<FilmDto>> findAll(@RequestParam(required = false) String category) {
-        List<Film> films;
-        if (Objects.nonNull(category)) {
-            films = filmService.findAllByCategory(category);
-        } else {
-            films = filmService.findAll();
-        }
-        return new ResponseEntity<>(filmAssembler.toCollectionModel(films), HttpStatus.OK);
+    public ResponseEntity<CollectionModel<FilmDto>> findAll(@QuerydslPredicate(root = Film.class) Predicate predicate,
+                                                            Pageable pageable) {
+        Page<Film> filmsPage = filmService.findAll(predicate, pageable);
+        return new ResponseEntity<>(pagedResourcesAssembler.toModel(filmsPage, filmAssembler), HttpStatus.OK);
     }
 
     @PreAuthorize("permitAll()")
@@ -48,8 +49,7 @@ public class FilmController {
     }
 
     @PreAuthorize("permitAll()")
-    @PostMapping(consumes = {"application/json"})
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping
     public ResponseEntity<FilmDto> create(@Validated @RequestBody FilmDto filmDto) {
         Film film = filmService.create(filmMapper.toEntity(filmDto));
         return new ResponseEntity<>(filmAssembler.toModel(film), HttpStatus.CREATED);

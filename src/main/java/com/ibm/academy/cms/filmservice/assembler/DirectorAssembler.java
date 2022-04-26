@@ -34,7 +34,7 @@ public class DirectorAssembler implements RepresentationModelAssembler<Director,
     public CollectionModel<DirectorDto> toCollectionModel(Iterable<? extends Director> entities) {
         CollectionModel<DirectorDto> dtos = CollectionModel.of(Streams.stream(entities)
                 .map(this::toModel).collect(Collectors.toList()));
-        dtos.add(linkTo(methodOn(DirectorController.class).findAll()).withSelfRel().expand());
+        dtos.add(linkTo(methodOn(DirectorController.class).findAll(null, null)).withSelfRel().expand());
         dtos.add(linkTo(methodOn(DirectorController.class).create(null)).withRel("create").expand());
         return dtos;
     }

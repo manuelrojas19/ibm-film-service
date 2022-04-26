@@ -6,7 +6,9 @@ import com.ibm.academy.cms.filmservice.dto.PersonDto;
 import com.ibm.academy.cms.filmservice.entity.Actor;
 import com.ibm.academy.cms.filmservice.entity.Director;
 import com.ibm.academy.cms.filmservice.entity.Person;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.MappingTarget;
 
 @Mapper(uses = {DataMapper.class})
 public interface PersonMapper {
@@ -28,6 +30,8 @@ public interface PersonMapper {
         else
             return null;
     }
+
+
 
     ActorDto toDto(Actor actor);
     Actor toEntity(ActorDto actorDto);

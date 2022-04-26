@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 public class FilmServiceImpl extends GenericServiceImpl<Film, FilmRepository> implements FilmService {
 
     public static final String ACTOR_NOT_FOUND_ERROR_MSG = "Actor was not found";
-    public static final String ACTOR_CURRENTLY_ADDED_ERROR_MSG = "This actor is currently added to this film";
     public static final String CATEGORY_CURRENTLY_ADDED_ERROR_MSG = "This category is currently added to this film";
     public static final String DIRECTOR_CURRENTLY_ADDED_ERROR_MSG = "This director is currently added to this film";
     public static final String DIRECTOR_NOT_FOUND_ERROR_MSG = "Director was not found";
@@ -28,19 +27,16 @@ public class FilmServiceImpl extends GenericServiceImpl<Film, FilmRepository> im
     private final ActorRepository actorRepository;
     private final DirectorRepository directorRepository;
     private final CategoryRepository categoryRepository;
-    private final ActorRoleRepository actorRoleRepository;
 
     @Autowired
     public FilmServiceImpl(FilmRepository repository,
                            ActorRepository actorRepository,
                            DirectorRepository directorRepository,
-                           CategoryRepository categoryRepository,
-                           ActorRoleRepository actorRoleRepository) {
+                           CategoryRepository categoryRepository) {
         super(repository);
         this.actorRepository = actorRepository;
         this.directorRepository = directorRepository;
         this.categoryRepository = categoryRepository;
-        this.actorRoleRepository = actorRoleRepository;
     }
 
     @Override
@@ -55,23 +51,27 @@ public class FilmServiceImpl extends GenericServiceImpl<Film, FilmRepository> im
 
     @Override
     @Transactional
-    public Film addActorToFilm(Long actorId, Long filmId, List<String> actorRoles) {
+    public Film addActorToFilm(Long actorId, Long filmId, List<String> roles) {
 
         Film film = this.findById(filmId);
         Actor actor = actorRepository.findById(actorId)
                 .orElseThrow(() -> new NotFoundException(ACTOR_NOT_FOUND_ERROR_MSG));
 
-        log.info("actorRoles --> {}", film.getActorsAndRoles());
+        log.info("actorRoles --> {}", film.getCasts());
 
-        List<ActorRole> actorRolesList = actorRoleRepository.findAllByActorAndFilm(actor, film);
+        Set<Cast> cast = roles.stream()
+                .map(r -> Cast.builder()
+                        .actor(actor)
+                        .film(film)
+                        .roles(roles)
+                        .build()
+                )
+                .collect(Collectors.toSet());
 
-        actorRoleRepository.save(ActorRole.builder()
-                .film(film)
-                .actor(actor)
-                .role("Nanahue")
-                .build());
+        film.setCasts(cast);
 
-        return film;
+        log.info("Sending to the client ---> {}", film);
+        return repository.save(film);
     }
 
     @Override

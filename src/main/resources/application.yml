@@ -16,6 +16,8 @@ spring:
     database: postgresql
     generate-ddl: true
     open-in-view: false
+  jackson:
+    default-property-inclusion: non_null
 keycloak:
   realm: dev
   auth-server-url: http://localhost:8180

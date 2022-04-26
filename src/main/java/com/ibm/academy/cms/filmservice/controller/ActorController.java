@@ -5,16 +5,19 @@ import com.ibm.academy.cms.filmservice.dto.ActorDto;
 import com.ibm.academy.cms.filmservice.entity.Actor;
 import com.ibm.academy.cms.filmservice.mapper.PersonMapper;
 import com.ibm.academy.cms.filmservice.service.ActorService;
+import com.querydsl.core.types.Predicate;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -25,13 +28,14 @@ public class ActorController {
     private final ActorService actorService;
     private final ActorAssembler actorAssembler;
     private final PersonMapper personMapper;
+    private final PagedResourcesAssembler<Actor> pagedResourcesAssembler;
 
     @PreAuthorize("permitAll()")
     @GetMapping
-    public ResponseEntity<CollectionModel<ActorDto>> findAll() {
-        List<Actor> actors = actorService.findAll();
-        log.info("Actors --> {}", actors);
-        return new ResponseEntity<>(actorAssembler.toCollectionModel(actors), HttpStatus.OK);
+    public ResponseEntity<CollectionModel<ActorDto>> findAll(@QuerydslPredicate(root = Actor.class) Predicate predicate,
+                                                             Pageable pageable) {
+        Page<Actor> actorsPage = actorService.findAll(predicate, pageable);
+        return new ResponseEntity<>(pagedResourcesAssembler.toModel(actorsPage, actorAssembler), HttpStatus.OK);
     }
 
     @PreAuthorize("permitAll()")
