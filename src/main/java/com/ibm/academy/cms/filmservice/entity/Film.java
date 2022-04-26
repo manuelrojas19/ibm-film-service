@@ -1,55 +1,74 @@
 package com.ibm.academy.cms.filmservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import net.minidev.json.annotate.JsonIgnore;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.*;
 
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 @ToString
-@Entity
-public class Film extends AuditMetadata {
+public class Film extends AuditMetadata implements Serializable {
+
+    private static final long serialVersionUID = -7636978099139553319L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    protected Long id;
+    private Long id;
 
     @NotBlank
+    @Size(max = 70)
+    @Column(name = "title", columnDefinition = "TEXT")
     private String title;
 
     @NotBlank
+    @Size(max = 400)
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @NotNull
+    @Past
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
-    private Date date;
+    private LocalDate date;
 
-    @OneToMany(mappedBy = "film", fetch = FetchType.EAGER)
-    private List<ActorRole> actorsAndRoles = new ArrayList<>();
+    @ManyToMany(
+            mappedBy = "films",
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST}
+    )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Category> categories;
 
-    @ManyToMany(mappedBy = "films", fetch = FetchType.EAGER)
-    private Set<Category> categories = new HashSet<>();
+    @ManyToMany(
+            mappedBy = "films",
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST}
+    )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Director> directors;
 
-    @ManyToMany(mappedBy = "films", fetch = FetchType.EAGER)
-    private Set<Director> directors = new HashSet<>();
+    @OneToMany(
+            mappedBy = "film",
+            fetch = FetchType.EAGER,
+            cascade = {CascadeType.MERGE, CascadeType.PERSIST}
+    )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Cast> casts;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Film)) return false;
-        if (!super.equals(o)) return false;
-        Film film = (Film) o;
-        return Objects.equals(getTitle(), film.getTitle()) && Objects.equals(getDescription(), film.getDescription()) && Objects.equals(getDate(), film.getDate());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), getTitle(), getDescription(), getDate());
-    }
 }

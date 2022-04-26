@@ -34,7 +34,7 @@ public class ActorAssembler implements RepresentationModelAssembler<Actor, Actor
     public CollectionModel<ActorDto> toCollectionModel(Iterable<? extends Actor> entities) {
         CollectionModel<ActorDto> dtos = CollectionModel.of(Streams.stream(entities)
                 .map(this::toModel).collect(Collectors.toList()));
-        dtos.add(linkTo(methodOn(ActorController.class).findAll()).withSelfRel().expand());
+        dtos.add(linkTo(methodOn(ActorController.class).findAll(null, null)).withSelfRel().expand());
         dtos.add(linkTo(methodOn(ActorController.class).create(null)).withRel("create").expand());
         return dtos;
     }

@@ -1,9 +1,11 @@
 package com.ibm.academy.cms.filmservice.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,7 +22,7 @@ public class MvcExceptionHandler {
     public ResponseEntity<Map<String, String>> validationErrorHandler(MethodArgumentNotValidException e) {
         Map<String, String> errorList = e.getFieldErrors()
                 .stream().collect(Collectors
-                        .toMap(fieldError -> fieldError.getField(), fieldError -> fieldError.getDefaultMessage()));
+                        .toMap(FieldError::getField, DefaultMessageSourceResolvable::getDefaultMessage));
         log.info("Sending validationError response to the client");
         return new ResponseEntity<>(errorList, HttpStatus.BAD_REQUEST);
     }

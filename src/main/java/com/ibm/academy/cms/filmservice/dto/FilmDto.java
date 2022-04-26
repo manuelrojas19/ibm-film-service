@@ -4,14 +4,17 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.minidev.json.annotate.JsonIgnore;
+import org.springframework.hateoas.server.core.Relation;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.*;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@Relation(collectionRelation = "films")
 public class FilmDto extends BaseEntityDto implements Serializable {
 
     @JsonIgnore
@@ -25,12 +28,12 @@ public class FilmDto extends BaseEntityDto implements Serializable {
 
     @NotNull
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
-    private Date date;
+    private LocalDate date;
 
     private List<DirectorDto> directors = new ArrayList<>();
 
     private List<CategoryDto> categories = new ArrayList<>();
 
-    private List<ActorRoleRelationDto> actorsAndRoles = new ArrayList<>();
+    private Set<CastDto> casts = new HashSet<>();
 
 }

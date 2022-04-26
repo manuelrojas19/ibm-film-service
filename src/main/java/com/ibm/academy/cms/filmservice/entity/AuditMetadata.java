@@ -1,31 +1,33 @@
 package com.ibm.academy.cms.filmservice.entity;
 
-import lombok.*;
-import org.springframework.data.annotation.*;
+import lombok.Data;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.EntityListeners;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+@Data
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class AuditMetadata implements Serializable {
+
+    private static final long serialVersionUID = -4065120880989347717L;
 
     @Version
     protected Long version;
 
     @CreatedDate
-    protected Date createdAt;
+    protected LocalDateTime createdAt;
 
     @LastModifiedDate
-    protected Date lastModifiedAt;
+    protected LocalDateTime lastModifiedAt;
 
     @CreatedBy
     protected String createdBy;
@@ -33,43 +35,4 @@ public abstract class AuditMetadata implements Serializable {
     @LastModifiedBy
     protected String lastModifiedBy;
 
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getLastModifiedAt() {
-        return lastModifiedAt;
-    }
-
-    public void setLastModifiedAt(Date lastModifiedAt) {
-        this.lastModifiedAt = lastModifiedAt;
-    }
-
-    public String getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public String getLastModifiedBy() {
-        return lastModifiedBy;
-    }
-
-    public void setLastModifiedBy(String lastModifiedBy) {
-        this.lastModifiedBy = lastModifiedBy;
-    }
 }

@@ -5,6 +5,8 @@ import lombok.EqualsAndHashCode;
 import org.springframework.hateoas.RepresentationModel;
 
 import javax.validation.constraints.Null;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -18,10 +20,10 @@ public class BaseEntityDto extends RepresentationModel<BaseEntityDto> {
     private Long version;
 
     @Null
-    private Date createdAt;
+    private LocalDateTime createdAt;
 
     @Null
-    private Date lastModifiedAt;
+    private LocalDateTime lastModifiedAt;
 
     @Null
     private String createdBy;
